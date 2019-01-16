@@ -17,7 +17,6 @@ import numpy as np
 import picos as sdp
 from problem import *
 from semidefinite import *
-from tests import printMatrices
 from bellpolytope import BellPolytope
 
 
@@ -32,14 +31,13 @@ def findMaxQuantumViolation(bellIneq,N,K,d,rho):
 def constructJMatrix(bellIneq,N,K,d,rho):
     J = np.zeros((N*K,N*K,d*d,d*d))
     bellCoeff = 0;
-    for a in range(N):
-        for b in range(N):
-            for x in range(K):
-                for y in range(K):
-                    J[a+N*x][b+N*y]=bellIneq[bellCoeff]*rho*(-1)
+    for x in range(N):
+        for y in range(N):
+            for a in range(K):
+                for b in range(K):
+                    J[a+K*x][b+K*y]=bellIneq[bellCoeff]*rho*(-1)
                     bellCoeff += 1
     return J.tolist()
-
 
 
 def computeBellValue(N, K, rho, prob, functional):
@@ -189,7 +187,7 @@ if __name__ == '__main__':
         else:
             with open('results.txt','a') as f:
                 f.write('Not this one \n')
-        printMatrices(prob)
+#printMatrices(prob)
         for i in range(9):
             if np.all(np.linalg.eigvals(prob.matsolX(i)) >= 0)==False:
                 print("X",i,prob.matsolX(i))
