@@ -4,7 +4,7 @@ import picos as sdp
 import cvxopt as cvx
 
 # some global parameters
-STD_MAXITER = 500
+STD_MAXITER = 20
 STD_ALLOWEDGAP = 1e-5
 
 

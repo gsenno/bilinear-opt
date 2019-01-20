@@ -88,13 +88,15 @@ if __name__ == '__main__':
         dims = (dim*np.ones((parties,N*K),np.int8)).tolist()
         prob.init_matrix_form(dims,J)
 
-        for j in range (0, (K*N)-1):
+        for j in range (0, (K*N)):
             prob.add_constraint(prob.matvarX(j) == prob.matvarX(j).H)
             prob.add_constraint(prob.matvarX(j) >> 0)
             prob.add_constraint(prob.matvarY(j) == prob.matvarY(j).H)
             prob.add_constraint(prob.matvarY(j) >> 0)
     
-        '''prob.add_constraint(prob.matvarX(1) == prob.matvarX(1).H)
+        '''prob.add_constraint(prob.matvarX(0) == prob.matvarX(1).H)
+        prob.add_constraint(prob.matvarX(0) >> 0)
+        prob.add_constraint(prob.matvarX(1) == prob.matvarX(1).H)
         prob.add_constraint(prob.matvarX(1) >> 0)
         prob.add_constraint(prob.matvarX(2) == prob.matvarX(2).H)
         prob.add_constraint(prob.matvarX(2) >> 0)
@@ -123,7 +125,9 @@ if __name__ == '__main__':
 
 #         
         
-        '''prob.add_constraint(prob.matvarY(1) == prob.matvarY(1).H)
+        '''prob.add_constraint(prob.matvarY(0) == prob.matvarY(1).H)
+        prob.add_constraint(prob.matvarY(0) >> 0)
+        prob.add_constraint(prob.matvarY(1) == prob.matvarY(1).H)
         prob.add_constraint(prob.matvarY(1) >> 0)
         prob.add_constraint(prob.matvarY(2) == prob.matvarY(2).H)
         prob.add_constraint(prob.matvarY(2) >> 0)
@@ -144,37 +148,45 @@ if __name__ == '__main__':
         prob.add_constraint(prob.matvarY(8) >> 0)'''
     
 
-        prob.add_constraint(prob.varX()[0]+prob.varX()[4] + prob.varX()[8] + prob.varX()[12]== 2./np.sqrt(2))
-        prob.add_constraint(prob.varX()[1]+prob.varX()[5] + prob.varX()[9] + prob.varX()[13]< 10**-20.)
-        prob.add_constraint(prob.varX()[1]+prob.varX()[5] + prob.varX()[9] + prob.varX()[13]> 0.)
-        prob.add_constraint(prob.varX()[2]+prob.varX()[6] + prob.varX()[10] + prob.varX()[14]== 0.)
-        prob.add_constraint(prob.varX()[3]+prob.varX()[7] + prob.varX()[11]  + prob.varX()[15]== 0.)
+        prob.add_constraint(prob.varX()[0]+prob.varX()[4] + prob.varX()[8] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[1]+prob.varX()[5] + prob.varX()[9] == 0.)
+        prob.add_constraint(prob.varX()[2]+prob.varX()[6] + prob.varX()[10] == 0.)
+        prob.add_constraint(prob.varX()[3]+prob.varX()[7] + prob.varX()[11] == 2./np.sqrt(2))
 
-        prob.add_constraint(prob.varX()[16]+prob.varX()[20]+prob.varX()[24] + prob.varX()[28]== 2./np.sqrt(2))
-        prob.add_constraint(prob.varX()[17]+prob.varX()[21]+prob.varX()[25] +prob.varX()[29]== 0)
-        prob.add_constraint(prob.varX()[18]+prob.varX()[22]+prob.varX()[26] + prob.varX()[30]== 0.)
-        prob.add_constraint(prob.varX()[19]+prob.varX()[23]+prob.varX()[27]  + prob.varX()[31]== 0.)
+        prob.add_constraint(prob.varX()[12]+prob.varX()[16]+prob.varX()[20]== 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[13]+prob.varX()[17]+prob.varX()[21] == 0.)
+        prob.add_constraint(prob.varX()[14]+prob.varX()[18]+prob.varX()[22] == 0.)
+        prob.add_constraint(prob.varX()[15]+prob.varX()[19]+prob.varX()[23]  == 2./np.sqrt(2))
 
-        prob.add_constraint(prob.varX()[32]+prob.varX()[36]+prob.varX()[40] + prob.varX()[44]== 2./np.sqrt(2))
-        prob.add_constraint(prob.varX()[33]+prob.varX()[37]+prob.varX()[41] + prob.varX()[45]== 0)
-        prob.add_constraint(prob.varX()[34]+prob.varX()[38]+prob.varX()[42] + prob.varX()[46]== 0.)
-        prob.add_constraint(prob.varX()[35]+prob.varX()[39]+prob.varX()[43] + prob.varX()[47]== 0.)
+        prob.add_constraint(prob.varX()[24]+prob.varX()[28]+prob.varX()[32] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[25]+prob.varX()[29]+prob.varX()[33] == 0.)
+        prob.add_constraint(prob.varX()[26]+prob.varX()[30]+prob.varX()[34] == 0.)
+        prob.add_constraint(prob.varX()[27]+prob.varX()[31]+prob.varX()[35] == 2./np.sqrt(2))
 
-        prob.add_constraint(prob.varY()[0]+prob.varY()[4] + prob.varY()[8] + prob.varY()[12]== 2./np.sqrt(2))
-        prob.add_constraint(prob.varY()[1]+prob.varY()[5] + prob.varY()[9] + prob.varY()[13]< 10**-20.)
-        prob.add_constraint(prob.varY()[1]+prob.varY()[5] + prob.varY()[9] + prob.varY()[13]> 0.)
-        prob.add_constraint(prob.varY()[2]+prob.varY()[6] + prob.varY()[10] + prob.varY()[14]== 0.)
-        prob.add_constraint(prob.varY()[3]+prob.varY()[7] + prob.varY()[11]  + prob.varY()[15]== 0.)
+        prob.add_constraint(prob.varX()[36]+prob.varX()[40]+prob.varX()[44] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[37]+prob.varX()[41]+prob.varX()[45] == 0.)
+        prob.add_constraint(prob.varX()[38]+prob.varX()[42]+prob.varX()[46] == 0.)
+        prob.add_constraint(prob.varX()[39]+prob.varX()[43]+prob.varX()[47] == 2./np.sqrt(2))
+        
+        prob.add_constraint(prob.varY()[0]+prob.varY()[4] + prob.varY()[8] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[1]+prob.varY()[5] + prob.varY()[9] == 0.)
+        prob.add_constraint(prob.varY()[2]+prob.varY()[6] + prob.varY()[10] == 0.)
+        prob.add_constraint(prob.varY()[3]+prob.varY()[7] + prob.varY()[11] == 2./np.sqrt(2))
 
-        prob.add_constraint(prob.varY()[16]+prob.varY()[20]+prob.varY()[24] + prob.varY()[28]== 2./np.sqrt(2))
-        prob.add_constraint(prob.varY()[17]+prob.varY()[21]+prob.varY()[25] +prob.varY()[29]== 0)
-        prob.add_constraint(prob.varY()[18]+prob.varY()[22]+prob.varY()[26] + prob.varY()[30]== 0.)
-        prob.add_constraint(prob.varY()[19]+prob.varY()[23]+prob.varY()[27]  + prob.varY()[31]== 0.)
-
-        prob.add_constraint(prob.varY()[32]+prob.varY()[36]+prob.varY()[40] + prob.varY()[44]== 2./np.sqrt(2))
-        prob.add_constraint(prob.varY()[33]+prob.varY()[37]+prob.varY()[41] + prob.varY()[45]== 0)
-        prob.add_constraint(prob.varY()[34]+prob.varY()[38]+prob.varY()[42] + prob.varY()[46]== 0.)
-        prob.add_constraint(prob.varY()[35]+prob.varY()[39]+prob.varY()[43] + prob.varY()[47]== 0.)
+        prob.add_constraint(prob.varY()[12]+prob.varY()[16] + prob.varY()[20] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[13]+prob.varY()[17] + prob.varY()[21] == 0.)
+        prob.add_constraint(prob.varY()[14]+prob.varY()[18] + prob.varY()[22] == 0.)
+        prob.add_constraint(prob.varY()[15]+prob.varY()[19] + prob.varY()[23] == 2./np.sqrt(2))
+        
+        prob.add_constraint(prob.varY()[24]+prob.varY()[28] + prob.varY()[32] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[25]+prob.varY()[29] + prob.varY()[33] == 0.)
+        prob.add_constraint(prob.varY()[26]+prob.varY()[30] + prob.varY()[34] == 0.)
+        prob.add_constraint(prob.varY()[27]+prob.varY()[31] + prob.varY()[35] == 2./np.sqrt(2))
+        
+        prob.add_constraint(prob.varY()[36]+prob.varY()[40] + prob.varY()[44] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[37]+prob.varY()[41] + prob.varY()[45] == 0.)
+        prob.add_constraint(prob.varY()[38]+prob.varY()[42] + prob.varY()[46] == 0.)
+        prob.add_constraint(prob.varY()[39]+prob.varY()[43] + prob.varY()[47] == 2./np.sqrt(2))
     
     
 
