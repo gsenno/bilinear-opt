@@ -18,6 +18,13 @@ import picos as sdp
 from problem import *
 from semidefinite import *
 from bellpolytope import BellPolytope
+import itertools as it
+from _functools import reduce
+import qutip as qt
+from sympy.combinatorics.generators import symmetric
+from bellscenario import BellScenario
+from itertools import product
+
 
 
 
@@ -52,21 +59,25 @@ def computeBellValue(N, K, rho, prob, functional):
 
 if __name__ == '__main__':
     parties = 2
-    N = 4
-    K = 3
+    N = 3
+    K = 4
+    outputsAlice = [4,4,4]
+    outputsBob = [4,4,4]
     dim = 2
-    
-    poly=BellPolytope(N,K)   
-    vertices=poly.getVertices()
+    BellViolations = []
+    #Creo que así los vértices están bien
+    scenario=BellScenario(outputsAlice,outputsBob)
+    poly=BellPolytope(scenario)   
+    vertices=poly.getListOfVertices()
     distributions=np.matrix(vertices)
     NumberOfCoefficients=(N*K)**2
              
-    with open('results.txt','w') as f:
-        f.write('Random functionals \n')
+    '''with open('results.txt','w') as f:
+        f.write('Random functionals \n')'''
     
     rho=np.matrix([[0,0,0,0],[0,1/2,-1/2,0],[0,-1/2,1/2,0],[0,0,0,0]])
     #Ineqs = np.loadtxt( 'Ineqs.txt')
-    for i in range (0,2): 
+    '''for i in range (0,2): 
         functional=np.random.uniform(-N**2*(N**2-2),1,size=NumberOfCoefficients)
         values=np.dot(distributions,np.transpose(functional))
         c=np.amax(values)
@@ -76,15 +87,17 @@ if __name__ == '__main__':
             c=np.amax(values)
         
         BellNormalisedFunctional=(functional/c).tolist()
-        print(BellNormalisedFunctional[12])
+        print(BellNormalisedFunctional[12])'''
     
         
         
-        
+    functionals=np.loadtxt('goodfunctionals.txt')
+    size=np.shape(functionals)
+    for i in range (0, size[0]):
         prob = QuantumBilinearProblem()
         #functional=Ineqs[i][:]
         #print(len(functional))
-        J=constructJMatrix(BellNormalisedFunctional, N, K, dim, rho)
+        J=constructJMatrix(functionals[i], N, K, dim, rho)
         dims = (dim*np.ones((parties,N*K),np.int8)).tolist()
         prob.init_matrix_form(dims,J)
 
@@ -148,57 +161,55 @@ if __name__ == '__main__':
         prob.add_constraint(prob.matvarY(8) >> 0)'''
     
 
-        prob.add_constraint(prob.varX()[0]+prob.varX()[4] + prob.varX()[8] == 2./np.sqrt(2))
-        prob.add_constraint(prob.varX()[1]+prob.varX()[5] + prob.varX()[9] == 0.)
-        prob.add_constraint(prob.varX()[2]+prob.varX()[6] + prob.varX()[10] == 0.)
-        prob.add_constraint(prob.varX()[3]+prob.varX()[7] + prob.varX()[11] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[0]+prob.varX()[4] + prob.varX()[8] + prob.varX()[12]== 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[1]+prob.varX()[5] + prob.varX()[9] + prob.varX()[13]== 0.)
+        prob.add_constraint(prob.varX()[2]+prob.varX()[6] + prob.varX()[10] + prob.varX()[14]== 0.)
+        prob.add_constraint(prob.varX()[3]+prob.varX()[7] + prob.varX()[11] + prob.varX()[15]== 2./np.sqrt(2))
 
-        prob.add_constraint(prob.varX()[12]+prob.varX()[16]+prob.varX()[20]== 2./np.sqrt(2))
-        prob.add_constraint(prob.varX()[13]+prob.varX()[17]+prob.varX()[21] == 0.)
-        prob.add_constraint(prob.varX()[14]+prob.varX()[18]+prob.varX()[22] == 0.)
-        prob.add_constraint(prob.varX()[15]+prob.varX()[19]+prob.varX()[23]  == 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[16]+prob.varX()[20]+prob.varX()[24] + prob.varX()[28]== 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[17]+prob.varX()[21]+prob.varX()[25] + prob.varX()[29]== 0.)
+        prob.add_constraint(prob.varX()[18]+prob.varX()[22]+prob.varX()[26] + prob.varX()[30]== 0.)
+        prob.add_constraint(prob.varX()[19]+prob.varX()[23]+prob.varX()[27] + prob.varX()[31] == 2./np.sqrt(2))
 
-        prob.add_constraint(prob.varX()[24]+prob.varX()[28]+prob.varX()[32] == 2./np.sqrt(2))
-        prob.add_constraint(prob.varX()[25]+prob.varX()[29]+prob.varX()[33] == 0.)
-        prob.add_constraint(prob.varX()[26]+prob.varX()[30]+prob.varX()[34] == 0.)
-        prob.add_constraint(prob.varX()[27]+prob.varX()[31]+prob.varX()[35] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[32]+prob.varX()[36]+prob.varX()[40] + prob.varX()[44]== 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[33]+prob.varX()[37]+prob.varX()[41] + prob.varX()[45]== 0.)
+        prob.add_constraint(prob.varX()[34]+prob.varX()[38]+prob.varX()[42] + prob.varX()[46]== 0.)
+        prob.add_constraint(prob.varX()[35]+prob.varX()[39]+prob.varX()[43] + prob.varX()[47]== 2./np.sqrt(2))
 
-        prob.add_constraint(prob.varX()[36]+prob.varX()[40]+prob.varX()[44] == 2./np.sqrt(2))
+        '''prob.add_constraint(prob.varX()[36]+prob.varX()[40]+prob.varX()[44] == 2./np.sqrt(2))
         prob.add_constraint(prob.varX()[37]+prob.varX()[41]+prob.varX()[45] == 0.)
         prob.add_constraint(prob.varX()[38]+prob.varX()[42]+prob.varX()[46] == 0.)
-        prob.add_constraint(prob.varX()[39]+prob.varX()[43]+prob.varX()[47] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varX()[39]+prob.varX()[43]+prob.varX()[47] == 2./np.sqrt(2))'''
         
-        prob.add_constraint(prob.varY()[0]+prob.varY()[4] + prob.varY()[8] == 2./np.sqrt(2))
-        prob.add_constraint(prob.varY()[1]+prob.varY()[5] + prob.varY()[9] == 0.)
-        prob.add_constraint(prob.varY()[2]+prob.varY()[6] + prob.varY()[10] == 0.)
-        prob.add_constraint(prob.varY()[3]+prob.varY()[7] + prob.varY()[11] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[0]+prob.varY()[4] + prob.varY()[8] + prob.varY()[12]== 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[1]+prob.varY()[5] + prob.varY()[9] + prob.varY()[13]== 0.)
+        prob.add_constraint(prob.varY()[2]+prob.varY()[6] + prob.varY()[10] + prob.varY()[14]== 0.)
+        prob.add_constraint(prob.varY()[3]+prob.varY()[7] + prob.varY()[11] + prob.varY()[15]== 2./np.sqrt(2))
 
-        prob.add_constraint(prob.varY()[12]+prob.varY()[16] + prob.varY()[20] == 2./np.sqrt(2))
-        prob.add_constraint(prob.varY()[13]+prob.varY()[17] + prob.varY()[21] == 0.)
-        prob.add_constraint(prob.varY()[14]+prob.varY()[18] + prob.varY()[22] == 0.)
-        prob.add_constraint(prob.varY()[15]+prob.varY()[19] + prob.varY()[23] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[16] + prob.varY()[20] + prob.varY()[24] + prob.varY()[28]== 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[17] + prob.varY()[21] + prob.varY()[25] + prob.varY()[29]== 0.)
+        prob.add_constraint(prob.varY()[18] + prob.varY()[22] + prob.varY()[26] + prob.varY()[30]== 0.)
+        prob.add_constraint(prob.varY()[19] + prob.varY()[23] + prob.varY()[27] + prob.varY()[31]== 2./np.sqrt(2))
         
-        prob.add_constraint(prob.varY()[24]+prob.varY()[28] + prob.varY()[32] == 2./np.sqrt(2))
-        prob.add_constraint(prob.varY()[25]+prob.varY()[29] + prob.varY()[33] == 0.)
-        prob.add_constraint(prob.varY()[26]+prob.varY()[30] + prob.varY()[34] == 0.)
-        prob.add_constraint(prob.varY()[27]+prob.varY()[31] + prob.varY()[35] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[32] + prob.varY()[36] + prob.varY()[40] + prob.varY()[44]== 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[33] + prob.varY()[37] + prob.varY()[41] + prob.varY()[45]== 0.)
+        prob.add_constraint(prob.varY()[34] + prob.varY()[38] + prob.varY()[42] + prob.varY()[46]== 0.)
+        prob.add_constraint(prob.varY()[35] + prob.varY()[39] + prob.varY()[43] + prob.varY()[47]== 2./np.sqrt(2))
         
-        prob.add_constraint(prob.varY()[36]+prob.varY()[40] + prob.varY()[44] == 2./np.sqrt(2))
+        '''prob.add_constraint(prob.varY()[36]+prob.varY()[40] + prob.varY()[44] == 2./np.sqrt(2))
         prob.add_constraint(prob.varY()[37]+prob.varY()[41] + prob.varY()[45] == 0.)
         prob.add_constraint(prob.varY()[38]+prob.varY()[42] + prob.varY()[46] == 0.)
-        prob.add_constraint(prob.varY()[39]+prob.varY()[43] + prob.varY()[47] == 2./np.sqrt(2))
+        prob.add_constraint(prob.varY()[39]+prob.varY()[43] + prob.varY()[47] == 2./np.sqrt(2))'''
     
     
 
         prob.solve(verb = 1, maxiter = STD_MAXITER, allowedgap = STD_ALLOWEDGAP)
     
-        print("Bell value=",computeBellValue(N,K,rho,prob,BellNormalisedFunctional))
-        if computeBellValue(N, K, rho, prob, BellNormalisedFunctional)<-2:
-            with open('results.txt','a') as f:
-                np.savetxt(f, BellNormalisedFunctional, fmt='%.2f')
-        else:
-            with open('results.txt','a') as f:
-                f.write('Not this one \n')
+        print("Bell value=",computeBellValue(N,K,rho,prob,functionals[i]))
+        BellViolations.append(computeBellValue(N,K,rho,prob,functionals[i]))
+        with open('results34.txt','a') as f:
+            np.savetxt('results34.txt',np.array(BellViolations))
+
 #printMatrices(prob)
         for i in range(9):
             if np.all(np.linalg.eigvals(prob.matsolX(i)) >= 0)==False:
